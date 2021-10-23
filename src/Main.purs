@@ -34,10 +34,17 @@ fromEvent = unsafeReadProtoTagged "ResizeEvent"
 toEvent :: ResizeEvent -> Event
 toEvent = unsafeCoerce
 
-whenWindowResizes :: forall state action slots output m. MonadEffect m => (Event -> Maybe action) -> H.HalogenM state action slots output m Unit
-whenWindowResizes fn = do
+windowSize :: Effect Size
+windowSize = do
+  w <- window
+  height <- H.liftEffect $ Window.innerHeight w
+  width <- H.liftEffect $ Window.innerWidth w
+  pure $ Size { height : height, width : width }
+
+whenWindowResizes :: forall state action slots output m. MonadEffect m => action -> H.HalogenM state action slots output m Unit
+whenWindowResizes action = do
   target <- H.liftEffect $ Window.toEventTarget <$> window
-  let listener = eventListener resize target fn
+  let listener = eventListener resize target (\_ -> Just action)
   _ <- H.subscribe listener
   pure unit
 
@@ -57,7 +64,7 @@ data Action = Init | UpdateSize
 
 handleAction :: forall output m. MonadEffect m => Action -> H.HalogenM State Action () output m Unit
 handleAction action = case action of
-  Init -> whenWindowResizes \_ -> Just UpdateSize
+  Init -> whenWindowResizes UpdateSize
   UpdateSize -> H.liftEffect $ log "UpdateSize"
 
 render :: forall m. State -> H.ComponentHTML Action () m
