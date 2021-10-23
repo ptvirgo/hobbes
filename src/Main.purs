@@ -64,8 +64,15 @@ data Action = Init | UpdateSize
 
 handleAction :: forall output m. MonadEffect m => Action -> H.HalogenM State Action () output m Unit
 handleAction action = case action of
-  Init -> whenWindowResizes UpdateSize
-  UpdateSize -> H.liftEffect $ log "UpdateSize"
+  Init -> do
+          whenWindowResizes UpdateSize
+          updateSize
+  UpdateSize -> updateSize
+
+updateSize :: forall output m. MonadEffect m => H.HalogenM State Action () output m Unit
+updateSize = do
+  size <- H.liftEffect windowSize
+  H.modify_ $ \_ -> Just size
 
 render :: forall m. State -> H.ComponentHTML Action () m
 render state =
