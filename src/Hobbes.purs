@@ -17,6 +17,8 @@ import Halogen.Query.Event (eventListener)
 import Halogen as H
 
 
+{- Size -}
+
 data Size = Size { height :: Int , width :: Int }
 
 instance Show Size where
@@ -46,3 +48,15 @@ whenWindowResizes action = do
   let listener = eventListener resize target (\_ -> Just action)
   _ <- H.subscribe listener
   pure unit
+
+{- Scale -}
+
+newtype Scale = Scale Number
+
+instance Show Scale where
+  show (Scale x) = show x
+
+derive instance eqScale :: Eq Scale
+
+scaleToFit :: Size -> Size -> Scale
+scaleToFit target subject = Scale 1.0
