@@ -16,6 +16,8 @@ import Web.Internal.FFI (unsafeReadProtoTagged)
 import Halogen.Query.Event (eventListener)
 
 import Halogen as H
+import Halogen.Svg.Attributes as SA
+import Halogen.Svg.Attributes.Transform (Transform(..))
 
 
 {- Size -}
@@ -52,17 +54,10 @@ whenWindowResizes action = do
 
 {- Scale -}
 
-newtype Scale = Scale Number
-
-instance Show Scale where
-  show (Scale x) = show x
-
-derive instance eqScale :: Eq Scale
-derive instance ordScale :: Ord Scale
-
-scaleToFit :: Size -> Size -> Scale
+scaleToFit :: Size -> Size -> Transform
 scaleToFit (Size target) (Size subject) =
-  min (scaleToFit' target.width subject.width) (scaleToFit' target.height subject.height)
+  Scale n n where
+    n = min (scaleToFit' target.width subject.width) (scaleToFit' target.height subject.height)
 
-scaleToFit' :: Int -> Int -> Scale
-scaleToFit' target subject = Scale $ (toNumber target) / (toNumber subject)
+scaleToFit' :: Int -> Int -> Number
+scaleToFit' target subject = (toNumber target) / (toNumber subject)
