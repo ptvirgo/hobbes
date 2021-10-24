@@ -1,6 +1,7 @@
 module Hobbes where
 
 import Prelude
+import Data.Int
 import Data.Maybe (Maybe(..))
 
 import Effect (Effect)
@@ -57,6 +58,11 @@ instance Show Scale where
   show (Scale x) = show x
 
 derive instance eqScale :: Eq Scale
+derive instance ordScale :: Ord Scale
 
 scaleToFit :: Size -> Size -> Scale
-scaleToFit target subject = Scale 1.0
+scaleToFit (Size target) (Size subject) =
+  min (scaleToFit' target.width subject.width) (scaleToFit' target.height subject.height)
+
+scaleToFit' :: Int -> Int -> Scale
+scaleToFit' target subject = Scale $ (toNumber target) / (toNumber subject)
