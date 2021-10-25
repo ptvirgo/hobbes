@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   width="100px"
+   height="100px"
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="SVGRoot">
+  <defs
+     id="defs815" />
+  <metadata
+     id="metadata818">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="spiral-icon">
+    <circle
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:#ff8080;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:5.14469481;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;paint-order:normal;enable-background:accumulate"
+       id="path1371"
+       cx="50"
+       cy="50"
+       r="47.427654" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ffeeaa;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path1417"
+       d="m 49.744209,52.537022 c -0.531898,2.192459 -3.217812,0.364693 -3.644012,-0.884051 -1.154977,-3.384019 2.370794,-6.190233 5.412113,-6.403974 5.440206,-0.382333 9.310316,4.876673 9.163936,9.940176 -0.214817,7.430893 -7.40517,12.49139 -14.468238,11.923898 C 36.794049,66.356694 30.511446,57.172867 31.524148,48.11677 32.798529,36.720596 44.002138,29.202954 55.048511,30.672948 68.42715,32.453307 77.186506,45.690201 75.252296,58.725374 72.972895,74.086874 57.69487,84.091884 42.671807,81.68912 25.327086,78.915034 14.073887,61.590914 16.948098,44.580569 20.213959,25.252333 39.587514,12.749213 58.584713,16.096898 79.896699,19.852495 93.650978,41.27784 89.828345,62.261575 85.584498,85.557499 62.105637,100.56386 39.135605,96.26517" />
+    <circle
+       r="47.427654"
+       cy="50"
+       cx="50"
+       id="circle1421"
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#800066;stroke-width:5.14469481;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;paint-order:normal;enable-background:accumulate" />
+  </g>
+</svg>
