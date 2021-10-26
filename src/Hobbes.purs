@@ -3,6 +3,8 @@ module Hobbes where
 import Prelude
 import Data.Int
 import Data.Maybe (Maybe(..))
+import Data.NonEmpty as NE
+import Data.Array ((:))
 
 import Effect (Effect)
 import Effect.Class (class MonadEffect)
@@ -16,9 +18,14 @@ import Web.Internal.FFI (unsafeReadProtoTagged)
 import Halogen.Query.Event (eventListener)
 
 import Halogen as H
+import Halogen.HTML as HH
+import Halogen.HTML.Properties (IProp)
 import Halogen.Svg.Attributes as SA
 import Halogen.Svg.Attributes.Transform (Transform(..))
 
+import Halogen.Svg.Elements as Svg
+import Halogen.Svg.Attributes as SvgAttr
+import Halogen.Svg.Attributes.Transform (Transform(..))
 
 {- Size -}
 
@@ -54,10 +61,34 @@ whenWindowResizes action = do
 
 {- Scale -}
 
-scaleToFit :: Size -> Size -> Transform
-scaleToFit (Size target) (Size subject) =
+fitSizeToScale :: Size -> Size -> Transform
+fitSizeToScale (Size target) (Size subject) =
   Scale n n where
-    n = min (scaleToFit' target.width subject.width) (scaleToFit' target.height subject.height)
+    n = min (fitSizeToScale' target.width subject.width) (fitSizeToScale' target.height subject.height)
 
-scaleToFit' :: Int -> Int -> Number
-scaleToFit' target subject = (toNumber target) / (toNumber subject)
+fitSizeToScale' :: Int -> Int -> Number
+fitSizeToScale' target subject = (toNumber target) / (toNumber subject)
+
+sizeToHxW :: forall r i. Size -> Array ( IProp ( height :: Number, width :: Number | r ) i )
+sizeToHxW (Size s) = [ SvgAttr.height (toNumber s.height), SvgAttr.width (toNumber s.width) ]
+
+sizeToTransform target subject = [ SvgAttr.transform [ (fitSizeToScale target subject) ]]
+
+{- SVG Panels -}
+
+type Url = String
+data Drawing = Drawing
+  { url :: Url
+  , translate :: Maybe { x :: Number, y :: Number }
+  }
+
+renderDrawing :: forall w i. Drawing -> HH.HTML w i
+renderDrawing (Drawing d) = Svg.use ([ SvgAttr.href d.url ] <> atts) where
+  atts = case d.translate of
+    Nothing -> []
+    Just tl -> [ SvgAttr.transform [ Translate tl.x tl.y ] ]
+
+type Panel = NE.NonEmpty Array Drawing
+
+renderPanel :: forall w i. Panel -> HH.HTML w i
+renderPanel p = Svg.g [] $ NE.fromNonEmpty (\x xs -> (renderDrawing x) : (map renderDrawing xs)) p

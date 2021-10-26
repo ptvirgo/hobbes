@@ -3,6 +3,7 @@ module Main where
 import Prelude
 import Data.Int
 import Data.Maybe (Maybe (..))
+import Data.NonEmpty as NE
 
 import Effect (Effect)
 import Effect.Class (class MonadEffect)
@@ -13,43 +14,36 @@ import Halogen.Aff as HA
 import Halogen.HTML as HH
 import Halogen.HTML.Events as HE
 import Halogen.VDom.Driver (runUI)
+
 import Halogen.Svg.Elements as Svg
 import Halogen.Svg.Attributes as SvgAttr
+import Halogen.Svg.Attributes.Transform (Transform(..))
 
 import Hobbes
 
 {- For demonstration / experimentation -}
 
-newtype Icon = Icon String
-derive instance eqIcon :: Eq Icon
-
-instance Show Icon where
-  show (Icon url) = url
-
-type State =
-  { icon :: Icon
-  , size :: Maybe Size
-  }
-
-star :: Icon
-star = Icon "/star.svg#star-icon"
-
-spiral :: Icon
-spiral = Icon "/spiral.svg#spiral-icon"
-
-iconSize :: Size
-iconSize = Size { height : 100, width : 100 }
-
 ratio :: Number
 ratio = 0.75
 
-initialState :: forall input. input -> State
-initialState _ =
-  { icon : star
-  , size : Nothing
+demosize :: Size
+demosize = Size { width : 500, height : 500 }
+  
+myPanel :: Panel
+myPanel = NE.NonEmpty (Drawing { url : "/panel.svg#panel", translate : Nothing }) []
+
+type State =
+  { size :: Maybe Size
+  , panel :: Panel
   }
 
-data Action = Init | UpdateSize | UseIcon Icon
+initialState :: forall input. input -> State
+initialState _ =
+  { size : Nothing
+  , panel : myPanel
+  }
+
+data Action = Init | UpdateSize
 
 handleAction :: forall output m. MonadEffect m => Action -> H.HalogenM State Action () output m Unit
 handleAction action = case action of
@@ -57,7 +51,6 @@ handleAction action = case action of
           whenWindowResizes UpdateSize
           updateSize
   UpdateSize -> updateSize
-  UseIcon i -> H.modify_ $ \state -> state { icon = i }
 
 updateSize :: forall output m. MonadEffect m => H.HalogenM State Action () output m Unit
 updateSize = do
@@ -68,19 +61,12 @@ updateSize = do
   H.modify_ $ \state -> state { size = Just newSize }
 
 render :: forall m. State -> H.ComponentHTML Action () m
-render state =
-  HH.body [ HE.onResize (\_ -> UpdateSize) ]
-  [ HH.button [ HE.onClick (\_ -> UseIcon star) ] [ HH.text "Star" ]
-  , HH.button [ HE.onClick (\_ -> UseIcon spiral) ] [ HH.text "Spiral" ]
-  , renderIcon state
-  ]
-
-renderIcon :: forall m. State -> H.ComponentHTML Action () m
-renderIcon state = case state.size of
-  Nothing -> HH.p_ [ HH.text "Size not loaded." ]
-  Just (Size s) ->
-    Svg.svg [ SvgAttr.height (toNumber s.height), SvgAttr.width (toNumber s.width) ]
-            [ Svg.use [ SvgAttr.href (show state.icon), SvgAttr.transform [ scaleToFit (Size s) iconSize ]]]
+render state = case state.size of
+  Nothing -> HH.p_ [ HH.text "Loading" ]
+  Just s -> Svg.svg ( sizeToHxW s)
+            [ Svg.g ( sizeToTransform s demosize )
+                    [( renderPanel state.panel )]
+            ]
 
 component :: forall query input output m. MonadEffect m => H.Component query input output m
 component = H.mkComponent

@@ -12,12 +12,14 @@ to generate this file without the comments in this block.
 -}
 { name = "my-project"
 , dependencies =
-  [ "console"
+  [ "arrays"
+  , "console"
   , "effect"
   , "halogen"
   , "halogen-svg-elems"
   , "integers"
   , "maybe"
+  , "nonempty"
   , "prelude"
   , "psci-support"
   , "test-unit"
