@@ -24,7 +24,7 @@ import Hobbes
 {- For demonstration / experimentation -}
 
 ratio :: Number
-ratio = 0.75
+ratio = 0.5
 
 demosize :: Size
 demosize = Size { width : 500, height : 500 }
@@ -65,7 +65,9 @@ render state = case state.size of
   Nothing -> HH.p_ [ HH.text "Loading" ]
   Just s -> Svg.svg ( sizeToHxW s)
             [ Svg.g ( sizeToTransform s demosize )
-                    [( renderPanel state.panel )]
+                    [( renderPanel state.panel )
+                    , renderBubble ( Bubble { height : 200.0, width : 100.0, rootX : 200.0, rootY : 250.0, rootLength : 25.0, facingRight : true } )
+                    ]
             ]
 
 component :: forall query input output m. MonadEffect m => H.Component query input output m

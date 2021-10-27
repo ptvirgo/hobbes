@@ -92,3 +92,46 @@ type Panel = NE.NonEmpty Array Drawing
 
 renderPanel :: forall w i. Panel -> HH.HTML w i
 renderPanel p = Svg.g [] $ NE.fromNonEmpty (\x xs -> (renderDrawing x) : (map renderDrawing xs)) p
+
+data Bubble = Bubble
+  { height :: Number
+  , width :: Number
+  , rootX :: Number
+  , rootY :: Number
+  , rootLength :: Number
+  , facingRight :: Boolean
+  }
+
+renderBubbleBubble :: Bubble -> Array SvgAttr.PathCommand
+renderBubbleBubble (Bubble b) =
+  let backStep = if b.facingRight
+                     then (\x -> - x)
+                     else identity
+      forwardStep = if b.facingRight
+                        then identity
+                        else (\x -> - x)
+  in
+  [ SvgAttr.l SvgAttr.Rel (forwardStep b.width * 0.3) (- b.rootLength)
+  , SvgAttr.h SvgAttr.Rel (backStep b.width * 0.2)
+  , SvgAttr.q SvgAttr.Rel (backStep b.width * 0.1) 0.0 (backStep b.width * 0.1) (- b.height * 0.1)
+  , SvgAttr.v SvgAttr.Rel (- b.height * 0.8)
+  , SvgAttr.q SvgAttr.Rel 0.0 (- b.height * 0.1) (forwardStep b.width * 0.1) (- b.height * 0.1)
+  , SvgAttr.h SvgAttr.Rel (forwardStep b.width * 0.8)
+  , SvgAttr.q SvgAttr.Rel (forwardStep b.width * 0.1) 0.0 (forwardStep b.width * 0.1) (b.height * 0.1)
+  , SvgAttr.v SvgAttr.Rel (b.height * 0.8)
+  , SvgAttr.q SvgAttr.Rel 0.0 (b.height * 0.1) (backStep b.width * 0.1) (b.height * 0.1)
+  , SvgAttr.h SvgAttr.Rel (backStep b.width * 0.5)
+  , SvgAttr.z
+  ]
+
+renderBubbleRoot :: Bubble -> Array SvgAttr.PathCommand
+renderBubbleRoot (Bubble b) = [ SvgAttr.m SvgAttr.Abs b.rootX b.rootY ]
+
+renderBubble :: forall w i. Bubble -> HH.HTML w i
+renderBubble b =
+  Svg.path
+    [ SvgAttr.d ( renderBubbleRoot b <> renderBubbleBubble b )
+    , SvgAttr.stroke $ SvgAttr.Named "black"
+    , SvgAttr.strokeWidth 5.0
+    , SvgAttr.fill $ SvgAttr.Named "white"
+    ]
