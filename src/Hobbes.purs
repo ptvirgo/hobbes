@@ -135,3 +135,17 @@ renderBubble b =
     , SvgAttr.strokeWidth 5.0
     , SvgAttr.fill $ SvgAttr.Named "white"
     ]
+
+renderBubbleBox :: forall w i. Bubble -> HH.HTML w i
+renderBubbleBox (Bubble b) = Svg.rect
+  [ SvgAttr.height b.height
+  , SvgAttr.width b.width
+  , SvgAttr.x b.rootX
+  , SvgAttr.y (b.rootY -  b.rootLength - b.height)
+  , SvgAttr.fill $ SvgAttr.Named "purple"
+  ]
+
+textBubbleWindow :: forall w i. Bubble -> Array ( HH.HTML w i ) -> HH.HTML w i
+textBubbleWindow (Bubble b) elements =
+  Svg.foreignObject [ SvgAttr.height b.height, SvgAttr.width b.width, SvgAttr.x b.rootX, SvgAttr.y (b.rootY - b.rootLength - b.height ) ]
+                    elements
