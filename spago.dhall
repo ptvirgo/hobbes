@@ -27,6 +27,7 @@ to generate this file without the comments in this block.
   , "web-events"
   , "web-html"
   ]
+, repository = "https://github.com/ptvirgo/hobbes"
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]
 }
