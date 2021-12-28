@@ -4,7 +4,6 @@ import Prelude
 import Data.Int
 import Data.Maybe (Maybe(..))
 import Data.NonEmpty as NE
-import Data.Array ((:))
 
 import Effect (Effect)
 import Effect.Class (class MonadEffect)
@@ -73,79 +72,3 @@ sizeToHxW :: forall r i. Size -> Array ( IProp ( height :: Number, width :: Numb
 sizeToHxW (Size s) = [ SvgAttr.height (toNumber s.height), SvgAttr.width (toNumber s.width) ]
 
 sizeToTransform target subject = [ SvgAttr.transform [ (fitSizeToScale target subject) ]]
-
-{- SVG Panels -}
-
-type Url = String
-data Drawing = Drawing
-  { url :: Url
-  , translate :: Maybe { x :: Number, y :: Number }
-  }
-
-renderDrawing :: forall w i. Drawing -> HH.HTML w i
-renderDrawing (Drawing d) = Svg.use ([ SvgAttr.href d.url ] <> atts) where
-  atts = case d.translate of
-    Nothing -> []
-    Just tl -> [ SvgAttr.transform [ Translate tl.x tl.y ] ]
-
-type Panel = NE.NonEmpty Array Drawing
-
-renderPanel :: forall w i. Panel -> HH.HTML w i
-renderPanel p = Svg.g [] $ NE.fromNonEmpty (\x xs -> (renderDrawing x) : (map renderDrawing xs)) p
-
-data Bubble = Bubble
-  { height :: Number
-  , width :: Number
-  , rootX :: Number
-  , rootY :: Number
-  , rootLength :: Number
-  , facingRight :: Boolean
-  }
-
-renderBubbleBubble :: Bubble -> Array SvgAttr.PathCommand
-renderBubbleBubble (Bubble b) =
-  let backStep = if b.facingRight
-                     then (\x -> - x)
-                     else identity
-      forwardStep = if b.facingRight
-                        then identity
-                        else (\x -> - x)
-  in
-  [ SvgAttr.l SvgAttr.Rel (forwardStep b.width * 0.3) (- b.rootLength)
-  , SvgAttr.h SvgAttr.Rel (backStep b.width * 0.2)
-  , SvgAttr.q SvgAttr.Rel (backStep b.width * 0.1) 0.0 (backStep b.width * 0.1) (- b.height * 0.1)
-  , SvgAttr.v SvgAttr.Rel (- b.height * 0.8)
-  , SvgAttr.q SvgAttr.Rel 0.0 (- b.height * 0.1) (forwardStep b.width * 0.1) (- b.height * 0.1)
-  , SvgAttr.h SvgAttr.Rel (forwardStep b.width * 0.8)
-  , SvgAttr.q SvgAttr.Rel (forwardStep b.width * 0.1) 0.0 (forwardStep b.width * 0.1) (b.height * 0.1)
-  , SvgAttr.v SvgAttr.Rel (b.height * 0.8)
-  , SvgAttr.q SvgAttr.Rel 0.0 (b.height * 0.1) (backStep b.width * 0.1) (b.height * 0.1)
-  , SvgAttr.h SvgAttr.Rel (backStep b.width * 0.5)
-  , SvgAttr.z
-  ]
-
-renderBubbleRoot :: Bubble -> Array SvgAttr.PathCommand
-renderBubbleRoot (Bubble b) = [ SvgAttr.m SvgAttr.Abs b.rootX b.rootY ]
-
-renderBubble :: forall w i. Bubble -> HH.HTML w i
-renderBubble b =
-  Svg.path
-    [ SvgAttr.d ( renderBubbleRoot b <> renderBubbleBubble b )
-    , SvgAttr.stroke $ SvgAttr.Named "black"
-    , SvgAttr.strokeWidth 5.0
-    , SvgAttr.fill $ SvgAttr.Named "white"
-    ]
-
-renderBubbleBox :: forall w i. Bubble -> HH.HTML w i
-renderBubbleBox (Bubble b) = Svg.rect
-  [ SvgAttr.height b.height
-  , SvgAttr.width b.width
-  , SvgAttr.x b.rootX
-  , SvgAttr.y (b.rootY -  b.rootLength - b.height)
-  , SvgAttr.fill $ SvgAttr.Named "purple"
-  ]
-
-textBubbleWindow :: forall w i. Bubble -> Array ( HH.HTML w i ) -> HH.HTML w i
-textBubbleWindow (Bubble b) elements =
-  Svg.foreignObject [ SvgAttr.height b.height, SvgAttr.width b.width, SvgAttr.x b.rootX, SvgAttr.y (b.rootY - b.rootLength - b.height ) ]
-                    elements
