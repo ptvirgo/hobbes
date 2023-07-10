@@ -99,6 +99,6 @@ in  upstream
 -------------------------------
 -}
 let upstream =
-      https://github.com/purescript/package-sets/releases/download/psc-0.14.3-20210825/packages.dhall sha256:eee0765aa98e0da8fc414768870ad588e7cada060f9f7c23c37385c169f74d9f
-let overrides = { halogen-svg-elems = upstream.halogen-svg-elems // { version = "v5.0.0" } }
-in  upstream // overrides
+      https://github.com/purescript/package-sets/releases/download/psc-0.15.9-20230629/packages.dhall
+        sha256:f91d36c7e4793fe4d7e042c57fef362ff3f9e9ba88454cd38686701e30bf545a
+in  upstream

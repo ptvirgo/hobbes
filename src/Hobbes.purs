@@ -2,73 +2,63 @@ module Hobbes where
 
 import Prelude
 import Data.Int
-import Data.Maybe (Maybe(..))
-import Data.NonEmpty as NE
-
-import Effect (Effect)
+import Data.Maybe (Maybe (..))
 import Effect.Class (class MonadEffect)
-
-import Web.HTML.Window as Window
-import Web.HTML (window)
-
-import Unsafe.Coerce (unsafeCoerce)
-import Web.Event.Event (Event, EventType(..))
-import Web.Internal.FFI (unsafeReadProtoTagged)
-import Halogen.Query.Event (eventListener)
 
 import Halogen as H
 import Halogen.HTML as HH
 import Halogen.HTML.Properties (IProp)
+import Halogen.Subscription (Emitter)
+import Halogen.Query.Event (eventListener)
+import Halogen.Svg.Elements as Svg
 import Halogen.Svg.Attributes as SA
 import Halogen.Svg.Attributes.Transform (Transform(..))
 
-import Halogen.Svg.Elements as Svg
-import Halogen.Svg.Attributes as SvgAttr
-import Halogen.Svg.Attributes.Transform (Transform(..))
+import Web.HTML (window)
+import Web.HTML.Window as Window
 
-{- Size -}
+import Resize (resize)
 
-data Size = Size { height :: Int , width :: Int }
+type Size =
+  { height :: Number
+  , width :: Number
+  }
 
-instance Show Size where
-  show (Size s) = "Height: " <> (show s.height) <> " Width: " <> (show s.width)
-
-foreign import data ResizeEvent :: Type
-
-resize :: EventType
-resize = EventType "resize"
-
-fromEvent :: Event -> Maybe ResizeEvent
-fromEvent = unsafeReadProtoTagged "ResizeEvent"
-
-toEvent :: ResizeEvent -> Event
-toEvent = unsafeCoerce
-
-windowSize :: Effect Size
-windowSize = do
-  w <- window
-  height <- H.liftEffect $ Window.innerHeight w
-  width <- H.liftEffect $ Window.innerWidth w
-  pure $ Size { height : height, width : width }
-
-whenWindowResizes :: forall state action slots output m. MonadEffect m => action -> H.HalogenM state action slots output m Unit
+whenWindowResizes :: forall action m. MonadEffect m => action -> m ( Emitter action )
 whenWindowResizes action = do
-  target <- H.liftEffect $ Window.toEventTarget <$> window
-  let listener = eventListener resize target (\_ -> Just action)
-  _ <- H.subscribe listener
-  pure unit
+  targetWindow <- H.liftEffect $ Window.toEventTarget <$> window
+  pure $ eventListener resize targetWindow (\_ -> Just action)
+
+getWindowSize :: forall m. MonadEffect m => m Size
+getWindowSize = do
+  w <- H.liftEffect window
+  initHeight <- H.liftEffect $ Window.innerHeight w
+  initWidth <- H.liftEffect $ Window.innerWidth w
+  pure { height: toNumber initHeight, width: toNumber initWidth }
+
 
 {- Scale -}
 
-fitSizeToScale :: Size -> Size -> Transform
-fitSizeToScale (Size target) (Size subject) =
-  Scale n n where
-    n = min (fitSizeToScale' target.width subject.width) (fitSizeToScale' target.height subject.height)
-
-fitSizeToScale' :: Int -> Int -> Number
-fitSizeToScale' target subject = (toNumber target) / (toNumber subject)
+fitSizeScale :: Size -> Size -> Number
+fitSizeScale target subject = min (fsc target.width subject.width) (fsc target.height subject.height) where
+    fsc t s = t / s
 
 sizeToHxW :: forall r i. Size -> Array ( IProp ( height :: Number, width :: Number | r ) i )
-sizeToHxW (Size s) = [ SvgAttr.height (toNumber s.height), SvgAttr.width (toNumber s.width) ]
+sizeToHxW s = [ SA.height s.height, SA.width s.width ]
 
-sizeToTransform target subject = [ SvgAttr.transform [ (fitSizeToScale target subject) ]]
+rescale :: Number -> Size -> Size
+rescale ratio size =
+  { height : toNumber <<< floor $ size.height * ratio
+  , width : toNumber <<< floor $ size.width * ratio
+  }
+
+fitTransform target subject = [ SA.transform [ Scale n n ]] where
+    n = (fitSizeScale target subject)
+
+fitSvgSize target subject = sizeToHxW <<< rescale ( fitSizeScale target subject ) $ subject
+
+fittedSvg :: forall w i. Size -> Size -> HH.HTML w i -> HH.HTML w i
+fittedSvg target subject image = 
+    Svg.svg
+        (fitSvgSize target subject)
+        [ Svg.g (fitTransform target subject) [image]]

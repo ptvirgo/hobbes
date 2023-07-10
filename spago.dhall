@@ -12,20 +12,19 @@ to generate this file without the comments in this block.
 -}
 { name = "hobbes"
 , dependencies =
-  [ "arrays"
-  , "console"
+  [ "console"
   , "effect"
   , "halogen"
+  , "halogen-subscriptions"
   , "halogen-svg-elems"
   , "integers"
   , "maybe"
-  , "nonempty"
   , "prelude"
-  , "psci-support"
   , "test-unit"
   , "unsafe-coerce"
   , "web-events"
   , "web-html"
+  , "web-uievents"
   ]
 , repository = "https://github.com/ptvirgo/hobbes"
 , packages = ./packages.dhall
