@@ -14,12 +14,13 @@
     updateSize :: H.HalogenM State Action Slot output m Unit
     updateSize = do
        newSize <- rescale ratio <$> getWindowSize
+       H.modify_ $ \state -> state { size = newSize }
 
     ...
 
     render :: State -> H.ComponentHTML Action Slot m
     render state = ...
-        fittedSvg targetSize defaultSize ...svg...
+        fittedSvg state.size (svg default size) (svg render)
 
 
 ## Import
