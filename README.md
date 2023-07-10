@@ -33,21 +33,20 @@ packages.dhall
     in  upstream
         with hobbes = 
             { dependencies =
-                [ "arrays"
-                , "console"
+               [ "console"
                 , "effect"
                 , "halogen"
+                , "halogen-subscriptions"
                 , "halogen-svg-elems"
                 , "integers"
                 , "maybe"
-                , "nonempty"
                 , "prelude"
-                , "psci-support"
                 , "test-unit"
                 , "unsafe-coerce"
                 , "web-events"
                 , "web-html"
-                ]
+                , "web-uievents"
+                ] 
             , repo = "https://github.com/ptvirgo/hobbes.git"
             , version = "master"
             }
