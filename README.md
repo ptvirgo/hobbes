@@ -28,26 +28,26 @@
 packages.dhall
 
 
-let upstream = ...
-
-in  upstream
-    with hobbes = 
-        { dependencies =
-            [ "arrays"
-            , "console"
-            , "effect"
-            , "halogen"
-            , "halogen-svg-elems"
-            , "integers"
-            , "maybe"
-            , "nonempty"
-            , "prelude"
-            , "psci-support"
-            , "test-unit"
-            , "unsafe-coerce"
-            , "web-events"
-            , "web-html"
-            ]
-        , repo = "https://github.com/ptvirgo/hobbes.git"
-        , version = "master"
-        }
+    let upstream = ...
+    
+    in  upstream
+        with hobbes = 
+            { dependencies =
+                [ "arrays"
+                , "console"
+                , "effect"
+                , "halogen"
+                , "halogen-svg-elems"
+                , "integers"
+                , "maybe"
+                , "nonempty"
+                , "prelude"
+                , "psci-support"
+                , "test-unit"
+                , "unsafe-coerce"
+                , "web-events"
+                , "web-html"
+                ]
+            , repo = "https://github.com/ptvirgo/hobbes.git"
+            , version = "master"
+            }
