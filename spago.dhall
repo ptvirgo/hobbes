@@ -19,7 +19,6 @@ to generate this file without the comments in this block.
   , "halogen-svg-elems"
   , "integers"
   , "maybe"
-  , "newtype"
   , "prelude"
   , "test-unit"
   , "unsafe-coerce"

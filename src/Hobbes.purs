@@ -3,7 +3,6 @@ module Hobbes where
 import Prelude
 import Data.Int
 import Data.Maybe (Maybe (..))
-import Data.Newtype (class Newtype)
 
 import Effect.Class (class MonadEffect)
 
@@ -64,18 +63,3 @@ fittedSvg target subject image =
     Svg.svg
         (fitSvgSize target subject)
         [ Svg.g (fitTransform target subject) [image]]
-
-
-{- Asset newtype -}
-
-newtype Asset = Asset String
-
-derive instance eqAsset :: Eq Asset
-derive instance ordAsset :: Ord Asset
-derive instance newtypeAsset :: Newtype Asset _
-
-instance Semigroup Asset where
-    append (Asset a) (Asset b) = Asset $ a <> b
-
-instance Monoid Asset where
-    mempty = Asset ""
