@@ -1,0 +1,23 @@
+package:
+  name: hobbes
+  dependencies:
+  - console
+  - effect
+  - halogen
+  - halogen-subscriptions
+  - halogen-svg-elems
+  - integers
+  - maybe
+  - prelude
+  - test-unit
+  - unsafe-coerce
+  - web-events
+  - web-html
+  - web-uievents
+  test:
+    main: Test.Main
+    dependencies:
+      - quickcheck
+workspace:
+  packageSet:
+    registry: 57.1.0 
